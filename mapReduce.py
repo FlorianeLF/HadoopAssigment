@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-Éditeur de Spyder
-
-Ceci est un script temporaire.
-"""
 
 import re
 
 import collections
 
 import itertools
+
 
 #split the text received in words and associate 1 to each of
 def map(sentence):
@@ -62,21 +58,27 @@ MAPPERS_NUMBER = 4 #set number of mappers
 
 # Read the text from a file
 file = open("text.txt", "r")
-text = file.read().lower() #read the file and remove all capital letters
+text = file.read()
 file.close()
 
-#compute characters number for each mapper
-numberChar = len(text)//MAPPERS_NUMBER
+# split the text into sentences
+sentences = re.split('(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)(\s|[A-Z].*)',text)
+
+# compute sentences number for each mapper
+numberSentences = len(sentences)//MAPPERS_NUMBER
 
 result = []
-
-#send each text block to a mapper and compute the result
-for i in range(0, len(text), numberChar):
-    result.extend(map(text[i:i+numberChar]))
+   
+# send each sentences block to a mapper and compute the result of all mappers
+for i in range(0, len(sentences), numberSentences):
+    sentence = ""
+    for j in range (i, i+numberSentences-1):
+        sentence+=sentences[j].lower() # add the computed number of sentences for a mapper and remove all capital letters
+    result.extend(map(sentence)) #gathering all mappers' results in one array
     
 reducNumber = 1
 
-#shuffle and reduce then print the outputs
+# shuffle and reduce then print the outputs
 for item in  shuffle(result, REDUCERS_NUMBER):
     print ("----------------------------------")
     print("Reducer ", reducNumber)
